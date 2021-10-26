@@ -1,5 +1,5 @@
 from flask import Flask, request
-from search_fnc import search_by_title, search_by_year, search_by_rating, get_freshest_by_genre, get_close_actors
+from search_fnc import search_by_title, search_by_year, search_by_rating, get_freshest_by_genre, get_close_actors, get_film_by_descr
 
 
 app = Flask(__name__)
@@ -39,13 +39,23 @@ def find_by_genre(genre):
 
 
 @app.route("/actors/<actor>")
-def get_close_actors(actor):
+def find_close_actors(actor):
     close_actors = get_close_actors(actor)
 
     if close_actors:
+        close_actors = ", ".join(close_actors)
         return close_actors
     return "No such actors", 404
 
+
+@app.route("/movie/<film_type>/<int:release_year>/<genre>")
+def find_movie_by_descr(film_type, release_year, genre):
+    films = get_film_by_descr(film_type, release_year, genre)
+
+    if films:
+        return films
+    return "No such movies", 404
+    
 
 if __name__ == "__main__":
     app.run(port=8000, debug=True)

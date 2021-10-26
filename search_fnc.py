@@ -100,24 +100,35 @@ def get_close_actors(actor):
             else:
                 actors[actor_name] = False
 
-    print(actors)
-
     close_actors = []
     for actor_name, is_played in actors.items():
         if is_played:
             close_actors.append(actor_name)
 
     if close_actors:
+        close_actors.remove(actor)
         return close_actors
     return None
 
 
-tst = get_close_actors("Rose McIver")
-print(tst)
-tst = get_close_actors("Ben Lamb")
-print(tst)
-tst = get_close_actors("Jason Statham")
-print(tst)
-tst = get_close_actors("Theo Devaney")
-print(tst)
-
+def get_film_by_descr(film_type, release_year, genre):
+    con = sqlite3.connect("netflix.db")
+    cur = con.cursor()
+    request = f"""SELECT title, description FROM netflix
+                 WHERE type = '{film_type}' AND release_year = {release_year} AND listed_in LIKE '%{genre}%'
+                 """
+    cur.execute(request)
+    response = cur.fetchall()
+    
+    if response:
+    
+        keys = []
+        values = []
+    
+        for films in response:
+            keys.append(films[0])
+            values.append(films[1])
+        
+        films_list = dict(zip(keys, values))
+        return json.dumps(films_list)
+    return None
